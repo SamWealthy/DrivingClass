@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driving Progress Report Generator</title>
+    <title>Secure Driving Progress Report Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,12 +34,98 @@
             line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        
+        .login-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+        
+        .login-form {
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            display: grid;
+            display: none;
             grid-template-columns: 1fr 350px;
             gap: 25px;
         }
@@ -52,6 +138,9 @@
             background: white;
             border-radius: 16px;
             box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         h1 {
@@ -63,6 +152,19 @@
         .subtitle {
             color: var(--gray);
             font-size: 1.2rem;
+        }
+        
+        .logout-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
         }
         
         .main-content {
@@ -105,37 +207,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--light-gray);
-            border-radius: 10px;
-            font-size: 16px;
-            transition: var(--transition);
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-        }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
         }
         
         .category {
@@ -236,6 +307,17 @@
         .comments-section textarea {
             min-height: 80px;
             font-size: 14px;
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            resize: vertical;
+        }
+        
+        .comments-section textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
         }
         
         .actions {
@@ -243,30 +325,6 @@
             justify-content: center;
             gap: 15px;
             margin-top: 30px;
-        }
-        
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
         }
         
         .btn-success {
@@ -438,6 +496,50 @@
             text-align: center;
         }
         
+        .instructor-comments {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+        }
+        
+        .instructor-comments.active {
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .comments-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
         @media (max-width: 992px) {
             .container {
                 grid-template-columns: 1fr;
@@ -490,13 +592,84 @@
             background: #ef476f;
             color: white;
         }
+        
+        .link-area {
+            margin-top: 15px;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+        }
+        
+        .link-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .link-url {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .link-url:hover {
+            text-decoration: underline;
+        }
+        
+        .section-comment {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .section-comment h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="login-container" id="loginContainer">
+        <div class="login-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h1 class="login-title">Secure Driving Instructor Portal</h1>
+        <p class="login-subtitle">Please enter your credentials to access the report generator</p>
+        
+        <div class="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <button class="btn btn-primary" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+
+    <div class="container" id="appContainer">
         <header>
-            <h1><i class="fas fa-car-side"></i> Driving Progress Report Generator</h1>
-            <p class="subtitle">Create detailed driving lesson reports and track student progress</p>
+            <div>
+                <h1><i class="fas fa-car-side"></i> Driving Progress Report Generator</h1>
+                <p class="subtitle">Create detailed driving lesson reports and track student progress</p>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </header>
         
         <main class="main-content">
@@ -547,10 +720,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Speed"></div>
-                        <div class="comments-section">
-                            <label for="comments-Speed">Instructor Comments</label>
-                            <textarea id="comments-Speed" placeholder="Add specific comments about speed control..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Positioning">
@@ -568,10 +737,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Positioning"></div>
-                        <div class="comments-section">
-                            <label for="comments-Positioning">Instructor Comments</label>
-                            <textarea id="comments-Positioning" placeholder="Add specific comments about lane positioning..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Use of Signs">
@@ -589,10 +754,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Use of Signs"></div>
-                        <div class="comments-section">
-                            <label for="comments-Use of Signs">Instructor Comments</label>
-                            <textarea id="comments-Use of Signs" placeholder="Add specific comments about signal usage..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Safety">
@@ -610,15 +771,11 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Safety"></div>
-                        <div class="comments-section">
-                            <label for="comments-Safety">Instructor Comments</label>
-                            <textarea id="comments-Safety" placeholder="Add specific comments about safety awareness..."></textarea>
-                        </div>
                     </div>
                     
-                    <div class="comments-section">
-                        <label for="comments-Normal Driving">Overall Comments for Normal Driving</label>
-                        <textarea id="comments-Normal Driving" placeholder="Add overall comments about normal driving..."></textarea>
+                    <div class="section-comment">
+                        <h4><i class="fas fa-comment"></i> Instructor Comments - Normal Driving</h4>
+                        <textarea id="comments-Normal Driving" placeholder="Add your comments about normal driving skills..."></textarea>
                     </div>
                 </div>
                 
@@ -640,10 +797,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Parallel Parking"></div>
-                        <div class="comments-section">
-                            <label for="comments-Parallel Parking">Instructor Comments</label>
-                            <textarea id="comments-Parallel Parking" placeholder="Add specific comments about parallel parking..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Forward Bay Parking">
@@ -661,10 +814,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Forward Bay Parking"></div>
-                        <div class="comments-section">
-                            <label for="comments-Forward Bay Parking">Instructor Comments</label>
-                            <textarea id="comments-Forward Bay Parking" placeholder="Add specific comments about forward bay parking..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Reverse Bay Parking">
@@ -682,10 +831,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Reverse Bay Parking"></div>
-                        <div class="comments-section">
-                            <label for="comments-Reverse Bay Parking">Instructor Comments</label>
-                            <textarea id="comments-Reverse Bay Parking" placeholder="Add specific comments about reverse bay parking..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Normal Reverse">
@@ -703,15 +848,11 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Normal Reverse"></div>
-                        <div class="comments-section">
-                            <label for="comments-Normal Reverse">Instructor Comments</label>
-                            <textarea id="comments-Normal Reverse" placeholder="Add specific comments about normal reverse..."></textarea>
-                        </div>
                     </div>
                     
-                    <div class="comments-section">
-                        <label for="comments-Manuevers">Overall Comments for Manuevers</label>
-                        <textarea id="comments-Manuevers" placeholder="Add overall comments about maneuvers..."></textarea>
+                    <div class="section-comment">
+                        <h4><i class="fas fa-comment"></i> Instructor Comments - Manuevers</h4>
+                        <textarea id="comments-Manuevers" placeholder="Add your comments about maneuver skills..."></textarea>
                     </div>
                 </div>
                 
@@ -733,10 +874,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Move Off safety"></div>
-                        <div class="comments-section">
-                            <label for="comments-Move Off safety">Instructor Comments</label>
-                            <textarea id="comments-Move Off safety" placeholder="Add specific comments about move off safety..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Exiting Roundabout">
@@ -754,10 +891,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Exiting Roundabout"></div>
-                        <div class="comments-section">
-                            <label for="comments-Exiting Roundabout">Instructor Comments</label>
-                            <textarea id="comments-Exiting Roundabout" placeholder="Add specific comments about roundabout exiting..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Manuever Observation">
@@ -775,10 +908,6 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Manuever Observation"></div>
-                        <div class="comments-section">
-                            <label for="comments-Manuever Observation">Instructor Comments</label>
-                            <textarea id="comments-Manuever Observation" placeholder="Add specific comments about maneuver observation..."></textarea>
-                        </div>
                     </div>
                     
                     <div class="skill-item" data-skill="Changing Lanes">
@@ -796,21 +925,12 @@
                             <button class="rating-btn" data-value="10">10</button>
                         </div>
                         <div class="feedback" id="feedback-Changing Lanes"></div>
-                        <div class="comments-section">
-                            <label for="comments-Changing Lanes">Instructor Comments</label>
-                            <textarea id="comments-Changing Lanes" placeholder="Add specific comments about lane changing..."></textarea>
-                        </div>
                     </div>
                     
-                    <div class="comments-section">
-                        <label for="comments-Observation">Overall Comments for Observation</label>
-                        <textarea id="comments-Observation" placeholder="Add overall comments about observation..."></textarea>
+                    <div class="section-comment">
+                        <h4><i class="fas fa-comment"></i> Instructor Comments - Observation</h4>
+                        <textarea id="comments-Observation" placeholder="Add your comments about observation skills..."></textarea>
                     </div>
-                </div>
-                
-                <div class="comments-section">
-                    <label for="generalComments">General Comments & Recommendations</label>
-                    <textarea id="generalComments" placeholder="Add general comments and recommendations for next lesson..."></textarea>
                 </div>
             </div>
             
@@ -922,7 +1042,61 @@
         </aside>
     </div>
 
+    <button class="comments-toggle" id="commentsToggle">
+        <i class="fas fa-comments"></i> Instructor Comments
+    </button>
+
+    <div class="instructor-comments" id="instructorComments">
+        <div class="comments-header">
+            <h3><i class="fas fa-chalkboard-teacher"></i> Instructor Comments & Resources</h3>
+            <button id="closeComments"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="form-group">
+            <label for="generalComments">General Comments & Recommendations</label>
+            <textarea id="generalComments" placeholder="Add general comments and recommendations for next lesson..."></textarea>
+        </div>
+        
+        <div class="link-area">
+            <label>Helpful Resources (add URLs that students can click on)</label>
+            
+            <div class="form-group">
+                <input type="text" id="linkTitle1" placeholder="Resource title" value="How to Parallel Park">
+                <input type="url" id="linkUrl1" placeholder="https://example.com" value="https://www.youtube.com/watch?v=4Wob4rV2pYI">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="linkTitle2" placeholder="Resource title" value="Roundabout Tutorial">
+                <input type="url" id="linkUrl2" placeholder="https://example.com" value="https://www.youtube.com/watch?v=5fe5xqU0How">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="linkTitle3" placeholder="Resource title" value="Highway Code">
+                <input type="url" id="linkUrl3" placeholder="https://example.com" value="https://www.gov.uk/guidance/the-highway-code">
+            </div>
+            
+            <div id="linkPreview">
+                <div class="link-item">
+                    <span class="link-icon"><i class="fas fa-link"></i></span>
+                    <a href="https://www.youtube.com/watch?v=4Wob4rV2pYI" class="link-url" target="_blank">How to Parallel Park</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon"><i class="fas fa-link"></i></span>
+                    <a href="https://www.youtube.com/watch?v=5fe5xqU0How" class="link-url" target="_blank">Roundabout Tutorial</a>
+                </div>
+                <div class="link-item">
+                    <span class="link-icon"><i class="fas fa-link"></i></span>
+                    <a href="https://www.gov.uk/guidance/the-highway-code" class="link-url" target="_blank">Highway Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Simple password protection (for demonstration purposes)
+        const CORRECT_USERNAME = "instructor";
+        const CORRECT_PASSWORD = "drive123";
+        
         // Feedback messages for each skill based on rating
         const feedbackMessages = {
             "Speed": {
@@ -994,7 +1168,7 @@
                 6: "Generally can forward bay park with some guidance. Needs more practice.",
                 7: "Good forward bay parking skills. Minor adjustments needed occasionally.",
                 8: "Consistently good forward bay parking. Very minor points for improvement.",
-                9: "Excellent forward bay parking skills. Confident and accurate.",
+                9: "Excellent forward bay parking skills. Confident and accuracy.",
                 10: "Perfect forward bay parking every time. Exceptional spatial awareness."
             },
             "Reverse Bay Parking": {
@@ -1074,6 +1248,77 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Set default date to today
             document.getElementById('lessonDate').valueAsDate = new Date();
+            
+            // Login functionality
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('appContainer').style.display = 'grid';
+                } else {
+                    alert('Invalid credentials. Please try again.');
+                }
+            });
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            });
+            
+            // Toggle comments panel
+            let commentsVisible = false;
+            document.getElementById('commentsToggle').addEventListener('click', function() {
+                commentsVisible = !commentsVisible;
+                if (commentsVisible) {
+                    document.getElementById('instructorComments').classList.add('active');
+                    this.innerHTML = '<i class="fas fa-times"></i> Close Comments';
+                } else {
+                    document.getElementById('instructorComments').classList.remove('active');
+                    this.innerHTML = '<i class="fas fa-comments"></i> Instructor Comments';
+                }
+            });
+            
+            // Close comments panel
+            document.getElementById('closeComments').addEventListener('click', function() {
+                document.getElementById('instructorComments').classList.remove('active');
+                document.getElementById('commentsToggle').innerHTML = '<i class="fas fa-comments"></i> Instructor Comments';
+                commentsVisible = false;
+            });
+            
+            // Update link previews
+            function updateLinkPreviews() {
+                const linkPreview = document.getElementById('linkPreview');
+                linkPreview.innerHTML = '';
+                
+                for (let i = 1; i <= 3; i++) {
+                    const title = document.getElementById(`linkTitle${i}`).value;
+                    const url = document.getElementById(`linkUrl${i}`).value;
+                    
+                    if (title && url) {
+                        const linkItem = document.createElement('div');
+                        linkItem.className = 'link-item';
+                        linkItem.innerHTML = `
+                            <span class="link-icon"><i class="fas fa-link"></i></span>
+                            <a href="${url}" class="link-url" target="_blank">${title}</a>
+                        `;
+                        linkPreview.appendChild(linkItem);
+                    }
+                }
+            }
+            
+            // Add event listeners to link inputs
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`linkTitle${i}`).addEventListener('input', updateLinkPreviews);
+                document.getElementById(`linkUrl${i}`).addEventListener('input', updateLinkPreviews);
+            }
+            
+            // Initialize link previews
+            updateLinkPreviews();
             
             // Add event listeners to all rating buttons
             document.querySelectorAll('.rating-btn').forEach(button => {
@@ -1231,7 +1476,6 @@
                                 const rating = selectedButton.dataset.value;
                                 const skill = skillItem.dataset.skill;
                                 const feedback = feedbackMessages[skill][rating];
-                                const comments = document.getElementById(`comments-${skill}`).value;
                                 
                                 const skillElement = document.createElement('div');
                                 skillElement.className = 'preview-skill';
@@ -1247,16 +1491,6 @@
                                 feedbackElement.style.color = '#555';
                                 feedbackElement.textContent = feedback;
                                 previewElement.appendChild(feedbackElement);
-                                
-                                if (comments) {
-                                    const commentsElement = document.createElement('p');
-                                    commentsElement.style.fontSize = '14px';
-                                    commentsElement.style.marginTop = '5px';
-                                    commentsElement.style.fontStyle = 'italic';
-                                    commentsElement.style.color = '#777';
-                                    commentsElement.textContent = `Instructor notes: ${comments}`;
-                                    previewElement.appendChild(commentsElement);
-                                }
                             }
                         });
                     }
