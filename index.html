@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driving Progress Report Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .category {
+            margin-bottom: 25px;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .skill-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        
+        .skill-item:hover {
+            background: #f1f3ff;
+        }
+        
+        .skill-name {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rating {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .rating-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background: white;
+            color: var(--dark);
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .rating-btn.selected {
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .rating-btn.selected-1 { background: #ff6b6b; }
+        .rating-btn.selected-2 { background: #ff9e6b; }
+        .rating-btn.selected-3 { background: #ffc46b; }
+        .rating-btn.selected-4 { background: #ffe66b; }
+        .rating-btn.selected-5 { background: #e6e66b; }
+        .rating-btn.selected-6 { background: #b8e66b; }
+        .rating-btn.selected-7 { background: #6be66e; }
+        .rating-btn.selected-8 { background: #6be6b8; }
+        .rating-btn.selected-9 { background: #6bc4e6; }
+        .rating-btn.selected-10 { background: #6b8ee6; }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .comments-section {
+            margin-top: 15px;
+        }
+        
+        .comments-section textarea {
+            min-height: 80px;
+            font-size: 14px;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #3a9fc9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 201, 240, 0.25);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .history-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .history-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .history-item:hover {
+            background: #e6e9ff;
+        }
+        
+        .history-item h4 {
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .history-item p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .stats-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .stat-name {
+            color: var(--dark);
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: var(--light-gray);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 5px;
+        }
+        
+        .report-preview {
+            margin-top: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            display: none;
+        }
+        
+        .preview-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .preview-content {
+            margin-bottom: 30px;
+        }
+        
+        .preview-section {
+            margin-bottom: 25px;
+        }
+        
+        .preview-skill {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--light-gray);
+        }
+        
+        .preview-comments {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .signature-area {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .signature-box {
+            width: 45%;
+            border-top: 1px solid var(--dark);
+            padding-top: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .rating {
+                justify-content: center;
+            }
+            
+            .rating-btn {
+                width: 38px;
+                height: 38px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #ffd166;
+            color: #7c5e10;
+        }
+        
+        .badge-danger {
+            background: #ef476f;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-car-side"></i> Driving Progress Report Generator</h1>
+            <p class="subtitle">Create detailed driving lesson reports and track student progress</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-user-graduate"></i> Student Information</h2>
+                </div>
+                <div class="student-info">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" placeholder="Enter student's full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lessonDate">Lesson Date</label>
+                        <input type="date" id="lessonDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="instructorName">Instructor Name</label>
+                        <input type="text" id="instructorName" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lessonDuration">Lesson Duration (minutes)</label>
+                        <input type="number" id="lessonDuration" placeholder="e.g., 60">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-road"></i> Driving Skills Assessment</h2>
+                </div>
+                
+                <div class="category">
+                    <h3 class="category-title"><i class="fas fa-car"></i> 1. Normal Driving</h3>
+                    
+                    <div class="skill-item" data-skill="Speed">
+                        <div class="skill-name">a. Speed <span class="badge badge-success">Control</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Speed"></div>
+                        <div class="comments-section">
+                            <label for="comments-Speed">Instructor Comments</label>
+                            <textarea id="comments-Speed" placeholder="Add specific comments about speed control..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Positioning">
+                        <div class="skill-name">b. Positioning <span class="badge badge-warning">Lane Discipline</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Positioning"></div>
+                        <div class="comments-section">
+                            <label for="comments-Positioning">Instructor Comments</label>
+                            <textarea id="comments-Positioning" placeholder="Add specific comments about lane positioning..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Use of Signs">
+                        <div class="skill-name">c. Use of Signals <span class="badge badge-danger">Safety</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Use of Signs"></div>
+                        <div class="comments-section">
+                            <label for="comments-Use of Signs">Instructor Comments</label>
+                            <textarea id="comments-Use of Signs" placeholder="Add specific comments about signal usage..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Safety">
+                        <div class="skill-name">d. Safety Awareness <span class="badge badge-danger">Critical</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Safety"></div>
+                        <div class="comments-section">
+                            <label for="comments-Safety">Instructor Comments</label>
+                            <textarea id="comments-Safety" placeholder="Add specific comments about safety awareness..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-section">
+                        <label for="comments-Normal Driving">Overall Comments for Normal Driving</label>
+                        <textarea id="comments-Normal Driving" placeholder="Add overall comments about normal driving..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <h3 class="category-title"><i class="fas fa-exchange-alt"></i> 2. Manuevers</h3>
+                    
+                    <div class="skill-item" data-skill="Parallel Parking">
+                        <div class="skill-name">a. Parallel Parking <span class="badge badge-warning">Technical</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Parallel Parking"></div>
+                        <div class="comments-section">
+                            <label for="comments-Parallel Parking">Instructor Comments</label>
+                            <textarea id="comments-Parallel Parking" placeholder="Add specific comments about parallel parking..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Forward Bay Parking">
+                        <div class="skill-name">b. Forward Bay Parking <span class="badge badge-success">Spatial Awareness</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Forward Bay Parking"></div>
+                        <div class="comments-section">
+                            <label for="comments-Forward Bay Parking">Instructor Comments</label>
+                            <textarea id="comments-Forward Bay Parking" placeholder="Add specific comments about forward bay parking..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Reverse Bay Parking">
+                        <div class="skill-name">c. Reverse Bay Parking <span class="badge badge-warning">Technical</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Reverse Bay Parking"></div>
+                        <div class="comments-section">
+                            <label for="comments-Reverse Bay Parking">Instructor Comments</label>
+                            <textarea id="comments-Reverse Bay Parking" placeholder="Add specific comments about reverse bay parking..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Normal Reverse">
+                        <div class="skill-name">d. Normal Reverse <span class="badge badge-success">Control</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Normal Reverse"></div>
+                        <div class="comments-section">
+                            <label for="comments-Normal Reverse">Instructor Comments</label>
+                            <textarea id="comments-Normal Reverse" placeholder="Add specific comments about normal reverse..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-section">
+                        <label for="comments-Manuevers">Overall Comments for Manuevers</label>
+                        <textarea id="comments-Manuevers" placeholder="Add overall comments about maneuvers..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <h3 class="category-title"><i class="fas fa-binoculars"></i> 3. Observation</h3>
+                    
+                    <div class="skill-item" data-skill="Move Off safety">
+                        <div class="skill-name">a. Move Off Safety <span class="badge badge-danger">Critical</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Move Off safety"></div>
+                        <div class="comments-section">
+                            <label for="comments-Move Off safety">Instructor Comments</label>
+                            <textarea id="comments-Move Off safety" placeholder="Add specific comments about move off safety..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Exiting Roundabout">
+                        <div class="skill-name">b. Exiting Roundabout <span class="badge badge-warning">Decision Making</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Exiting Roundabout"></div>
+                        <div class="comments-section">
+                            <label for="comments-Exiting Roundabout">Instructor Comments</label>
+                            <textarea id="comments-Exiting Roundabout" placeholder="Add specific comments about roundabout exiting..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Manuever Observation">
+                        <div class="skill-name">c. Manuever Observation <span class="badge badge-danger">Safety</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Manuever Observation"></div>
+                        <div class="comments-section">
+                            <label for="comments-Manuever Observation">Instructor Comments</label>
+                            <textarea id="comments-Manuever Observation" placeholder="Add specific comments about maneuver observation..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-item" data-skill="Changing Lanes">
+                        <div class="skill-name">d. Changing Lanes <span class="badge badge-warning">Observation</span></div>
+                        <div class="rating">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                            <button class="rating-btn" data-value="6">6</button>
+                            <button class="rating-btn" data-value="7">7</button>
+                            <button class="rating-btn" data-value="8">8</button>
+                            <button class="rating-btn" data-value="9">9</button>
+                            <button class="rating-btn" data-value="10">10</button>
+                        </div>
+                        <div class="feedback" id="feedback-Changing Lanes"></div>
+                        <div class="comments-section">
+                            <label for="comments-Changing Lanes">Instructor Comments</label>
+                            <textarea id="comments-Changing Lanes" placeholder="Add specific comments about lane changing..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-section">
+                        <label for="comments-Observation">Overall Comments for Observation</label>
+                        <textarea id="comments-Observation" placeholder="Add overall comments about observation..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="comments-section">
+                    <label for="generalComments">General Comments & Recommendations</label>
+                    <textarea id="generalComments" placeholder="Add general comments and recommendations for next lesson..."></textarea>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-primary" id="generateBtn"><i class="fas fa-file-alt"></i> Generate Report</button>
+                <button class="btn btn-success" id="exportBtn" disabled><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                <button class="btn btn-outline" id="saveBtn"><i class="fas fa-save"></i> Save for Later</button>
+                <button class="btn btn-outline" id="clearBtn"><i class="fas fa-trash-alt"></i> Clear Form</button>
+            </div>
+            
+            <div class="report-preview" id="reportPreview">
+                <div class="preview-header">
+                    <h2>Driving Progress Report</h2>
+                    <p id="preview-student-info">Student: <span id="preview-name"></span> | Date: <span id="preview-date"></span> | Instructor: <span id="preview-instructor"></span></p>
+                </div>
+                
+                <div class="preview-content">
+                    <div class="preview-section">
+                        <h3>1. Normal Driving</h3>
+                        <div id="preview-normal-driving"></div>
+                        <div class="preview-comments" id="preview-comments-normal-driving"></div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h3>2. Manuevers</h3>
+                        <div id="preview-manuevers"></div>
+                        <div class="preview-comments" id="preview-comments-manuevers"></div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h3>3. Observation</h3>
+                        <div id="preview-observation"></div>
+                        <div class="preview-comments" id="preview-comments-observation"></div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h3>Instructor Comments & Recommendations</h3>
+                        <p id="preview-general-comments"></p>
+                    </div>
+                </div>
+                
+                <div class="signature-area">
+                    <div class="signature-box">
+                        <p>Student Signature</p>
+                    </div>
+                    <div class="signature-box">
+                        <p>Instructor Signature: <span id="preview-instructor-signature"></span></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="sidebar">
+            <div class="history-card">
+                <h3 class="history-title"><i class="fas fa-history"></i> Lesson History</h3>
+                <div id="lessonHistory">
+                    <div class="history-item">
+                        <h4>John Smith <span class="badge badge-success">8.2</span></h4>
+                        <p><i class="far fa-calendar"></i> August 15, 2023</p>
+                        <p>Good progress with roundabouts, needs work on parallel parking</p>
+                    </div>
+                    <div class="history-item">
+                        <h4>Emma Johnson <span class="badge badge-warning">6.5</span></h4>
+                        <p><i class="far fa-calendar"></i> August 14, 2023</p>
+                        <p>Improving confidence but still hesitant at junctions</p>
+                    </div>
+                    <div class="history-item">
+                        <h4>Michael Brown <span class="badge badge-success">9.1</span></h4>
+                        <p><i class="far fa-calendar"></i> August 12, 2023</p>
+                        <p>Excellent control and observation, nearly test ready</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card">
+                <h3 class="stats-title"><i class="fas fa-chart-line"></i> Progress Statistics</h3>
+                <div class="stat-item">
+                    <span class="stat-name">Students Taught</span>
+                    <span class="stat-value">42</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Lessons This Month</span>
+                    <span class="stat-value">28</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Average Rating</span>
+                    <span class="stat-value">7.8/10</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Test Pass Rate</span>
+                    <span class="stat-value">86%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Most Common Area for Improvement</span>
+                    <span class="stat-value">Observation</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-sliders-h"></i> Quick Actions</h2>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-outline" style="width:100%; margin-bottom:10px;"><i class="fas fa-plus"></i> New Student</button>
+                    <button class="btn btn-outline" style="width:100%; margin-bottom:10px;"><i class="fas fa-search"></i> Find Student</button>
+                    <button class="btn btn-outline" style="width:100%;"><i class="fas fa-chart-pie"></i> View Reports</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Feedback messages for each skill based on rating
+        const feedbackMessages = {
+            "Speed": {
+                1: "Excessive speeding, dangerous driving. MAJOR fault. Always adhere to speed limits.",
+                2: "Frequent speeding, poor speed awareness. SERIOUS fault. Monitor speedometer regularly.",
+                3: "Often exceeds speed limits. Needs significant improvement in speed control.",
+                4: "Sometimes drives too fast for conditions. Must work on speed adaptation.",
+                5: "Inconsistent speed control. Needs improvement in maintaining appropriate speeds.",
+                6: "Generally maintains speed but sometimes too fast or slow. Practice speed awareness.",
+                7: "Good speed control most times. Occasionally needs reminders.",
+                8: "Consistently maintains appropriate speed. Minor adjustments needed occasionally.",
+                9: "Excellent speed awareness and control. Very minor points for improvement.",
+                10: "Perfect speed control in all conditions. Demonstrates excellent awareness."
+            },
+            "Positioning": {
+                1: "Dangerous positioning, frequently in wrong lane. MAJOR fault. Needs immediate improvement.",
+                2: "Poor lane discipline, often incorrectly positioned. SERIOUS fault. Practice road positioning.",
+                3: "Regular positioning errors. Significant improvement needed.",
+                4: "Sometimes poorly positioned. Needs to work on lane discipline.",
+                5: "Inconsistent positioning. Requires practice to maintain correct position.",
+                6: "Generally good positioning with some errors. Needs more practice.",
+                7: "Good positioning most times. Minor errors occasionally.",
+                8: "Consistently good positioning. Very minor adjustments needed.",
+                9: "Excellent positioning in all situations. Demonstrates strong awareness.",
+                10: "Perfect positioning at all times. Exceptional lane discipline."
+            },
+            "Use of Signs": {
+                1: "Rarely uses signals. Dangerous driving. MAJOR fault. Must use signals always.",
+                2: "Frequently forgets to signal. SERIOUS fault. Needs to develop habit of signaling.",
+                3: "Often misses signals. Significant improvement needed in signal use.",
+                4: "Inconsistent signaling. Needs to work on timely signal application.",
+                5: "Sometimes signals incorrectly or forgets. Practice signal timing and use.",
+                6: "Generally good signal use with some errors. Needs more consistency.",
+                7: "Good signal use most times. Minor timing issues occasionally.",
+                8: "Consistently good signal use. Very minor timing adjustments needed.",
+                9: "Excellent signal use in all situations. Perfect timing and application.",
+                10: "Perfect signal use always. Exceptional awareness and timing."
+            },
+            "Safety": {
+                1: "Dangerous driving with multiple safety risks. MAJOR faults. Needs immediate improvement.",
+                2: "Frequent safety errors. SERIOUS faults. Must prioritize safety always.",
+                3: "Regular safety issues. Significant improvement needed in safe driving practices.",
+                4: "Sometimes compromises safety. Needs to work on defensive driving.",
+                5: "Inconsistent safety awareness. Requires practice to maintain safety standards.",
+                6: "Generally safe driving with some lapses. Needs more consistency.",
+                7: "Good safety awareness most times. Minor lapses occasionally.",
+                8: "Consistently safe driving. Very minor points for improvement.",
+                9: "Excellent safety awareness in all situations. Demonstrates defensive driving.",
+                10: "Perfect safety record. Exceptional defensive driving skills."
+            },
+            "Parallel Parking": {
+                1: "Unable to perform parallel parking. MAJOR fault. Needs significant practice.",
+                2: "Struggles greatly with parallel parking. SERIOUS fault. Requires dedicated practice.",
+                3: "Major difficulties with parallel parking. Significant improvement needed.",
+                4: "Often unsuccessful at parallel parking. Needs more practice and technique work.",
+                5: "Inconsistent parallel parking. Requires practice to improve technique.",
+                6: "Generally can parallel park with some guidance. Needs more practice.",
+                7: "Good parallel parking skills. Minor adjustments needed occasionally.",
+                8: "Consistently good parallel parking. Very minor points for improvement.",
+                9: "Excellent parallel parking skills. Confident and accurate.",
+                10: "Perfect parallel parking every time. Exceptional spatial awareness."
+            },
+            "Forward Bay Parking": {
+                1: "Unable to perform forward bay parking. MAJOR fault. Needs significant practice.",
+                2: "Struggles greatly with forward bay parking. SERIOUS fault. Requires dedicated practice.",
+                3: "Major difficulties with forward bay parking. Significant improvement needed.",
+                4: "Often unsuccessful at forward bay parking. Needs more practice and technique work.",
+                5: "Inconsistent forward bay parking. Requires practice to improve technique.",
+                6: "Generally can forward bay park with some guidance. Needs more practice.",
+                7: "Good forward bay parking skills. Minor adjustments needed occasionally.",
+                8: "Consistently good forward bay parking. Very minor points for improvement.",
+                9: "Excellent forward bay parking skills. Confident and accurate.",
+                10: "Perfect forward bay parking every time. Exceptional spatial awareness."
+            },
+            "Reverse Bay Parking": {
+                1: "Unable to perform reverse bay parking. MAJOR fault. Needs significant practice.",
+                2: "Struggles greatly with reverse bay parking. SERIOUS fault. Requires dedicated practice.",
+                3: "Major difficulties with reverse bay parking. Significant improvement needed.",
+                4: "Often unsuccessful at reverse bay parking. Needs more practice and technique work.",
+                5: "Inconsistent reverse bay parking. Requires practice to improve technique.",
+                6: "Generally can reverse bay park with some guidance. Needs more practice.",
+                7: "Good reverse bay parking skills. Minor adjustments needed occasionally.",
+                8: "Consistently good reverse bay parking. Very minor points for improvement.",
+                9: "Excellent reverse bay parking skills. Confident and accurate.",
+                10: "Perfect reverse bay parking every time. Exceptional spatial awareness."
+            },
+            "Normal Reverse": {
+                1: "Unable to reverse safely. MAJOR fault. Needs significant practice.",
+                2: "Struggles greatly with reversing. SERIOUS fault. Requires dedicated practice.",
+                3: "Major difficulties with reversing. Significant improvement needed.",
+                4: "Often has issues when reversing. Needs more practice and observation.",
+                5: "Inconsistent reversing skills. Requires practice to improve control and observation.",
+                6: "Generally can reverse with some guidance. Needs more practice.",
+                7: "Good reversing skills. Minor observation issues occasionally.",
+                8: "Consistently good reversing. Very minor points for improvement.",
+                9: "Excellent reversing skills. Confident with good observation.",
+                10: "Perfect reversing every time. Exceptional control and observation."
+            },
+            "Move Off safety": {
+                1: "Dangerous move offs without observation. MAJOR fault. Needs immediate improvement.",
+                2: "Frequently moves off unsafely. SERIOUS fault. Must check blind spots always.",
+                3: "Regular observation misses when moving off. Significant improvement needed.",
+                4: "Sometimes moves off without proper checks. Needs to work on routine.",
+                5: "Inconsistent observation when moving off. Requires practice to develop habit.",
+                6: "Generally safe move offs with occasional misses. Needs more consistency.",
+                7: "Good move off procedure most times. Minor lapses occasionally.",
+                8: "Consistently safe move offs. Very minor points for improvement.",
+                9: "Excellent move off procedure. Always thorough observations.",
+                10: "Perfect move offs every time. Exceptional observation and safety."
+            },
+            "Exiting Roundabout": {
+                1: "Dangerous roundabout exits without signaling or observation. MAJOR fault.",
+                2: "Frequent errors when exiting roundabouts. SERIOUS fault. Needs practice.",
+                3: "Regular issues with roundabout exits. Significant improvement needed.",
+                4: "Sometimes exits incorrectly. Needs to work on signaling and lane positioning.",
+                5: "Inconsistent roundabout exits. Requires practice to improve technique.",
+                6: "Generally good roundabout exits with some errors. Needs more practice.",
+                7: "Good roundabout exiting skills. Minor timing issues occasionally.",
+                8: "Consistently good roundabout exits. Very minor adjustments needed.",
+                9: "Excellent roundabout exiting. Confident with perfect timing and signals.",
+                10: "Perfect roundabout exits every time. Exceptional awareness and control."
+            },
+            "Manuever Observation": {
+                1: "Rarely observes during maneuvers. Dangerous practice. MAJOR fault.",
+                2: "Frequently forgets observations during maneuvers. SERIOUS fault.",
+                3: "Regular observation misses during maneuvers. Significant improvement needed.",
+                4: "Sometimes lacks observation during maneuvers. Needs to work on routine.",
+                5: "Inconsistent observation during maneuvers. Requires practice to develop habit.",
+                6: "Generally good observation with occasional misses. Needs more consistency.",
+                7: "Good observation during maneuvers most times. Minor lapses occasionally.",
+                8: "Consistently good observation during maneuvers. Very minor points for improvement.",
+                9: "Excellent observation during all maneuvers. Thorough and systematic.",
+                10: "Perfect observation during every maneuver. Exceptional awareness."
+            },
+            "Changing Lanes": {
+                1: "Dangerous lane changes without observation. MAJOR fault. Needs immediate improvement.",
+                2: "Frequent unsafe lane changes. SERIOUS fault. Must check blind spots always.",
+                3: "Regular observation misses when changing lanes. Significant improvement needed.",
+                4: "Sometimes changes lanes without proper checks. Needs to work on routine.",
+                5: "Inconsistent observation when changing lanes. Requires practice to develop habit.",
+                6: "Generally safe lane changes with occasional misses. Needs more consistency.",
+                7: "Good lane change procedure most times. Minor lapses occasionally.",
+                8: "Consistently safe lane changes. Very minor points for improvement.",
+                9: "Excellent lane change procedure. Always thorough observations and signals.",
+                10: "Perfect lane changes every time. Exceptional observation and timing."
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            document.getElementById('lessonDate').valueAsDate = new Date();
+            
+            // Add event listeners to all rating buttons
+            document.querySelectorAll('.rating-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const skillItem = this.closest('.skill-item');
+                    const skill = skillItem.dataset.skill;
+                    const value = this.dataset.value;
+                    
+                    // Remove selected class from all buttons in this skill
+                    skillItem.querySelectorAll('.rating-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                        for (let i = 1; i <= 10; i++) {
+                            btn.classList.remove(`selected-${i}`);
+                        }
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    this.classList.add(`selected-${value}`);
+                    
+                    // Show feedback
+                    const feedbackElement = document.getElementById(`feedback-${skill}`);
+                    feedbackElement.textContent = feedbackMessages[skill][value];
+                    feedbackElement.style.display = 'block';
+                });
+            });
+            
+            // Generate report button
+            document.getElementById('generateBtn').addEventListener('click', function() {
+                const studentName = document.getElementById('studentName').value;
+                const lessonDate = document.getElementById('lessonDate').value;
+                const instructorName = document.getElementById('instructorName').value;
+                
+                if (!studentName) {
+                    alert('Please enter student name');
+                    return;
+                }
+                
+                if (!instructorName) {
+                    alert('Please enter your name as instructor');
+                    return;
+                }
+                
+                // Update preview
+                document.getElementById('preview-name').textContent = studentName;
+                document.getElementById('preview-date').textContent = new Date(lessonDate).toLocaleDateString();
+                document.getElementById('preview-instructor').textContent = instructorName;
+                document.getElementById('preview-instructor-signature').textContent = instructorName;
+                
+                // Generate skill ratings for preview
+                generateSkillPreview('Normal Driving', 'preview-normal-driving');
+                generateSkillPreview('Manuevers', 'preview-manuevers');
+                generateSkillPreview('Observation', 'preview-observation');
+                
+                // Add comments to preview
+                document.getElementById('preview-comments-normal-driving').textContent = 
+                    document.getElementById('comments-Normal Driving').value || "No additional comments.";
+                
+                document.getElementById('preview-comments-manuevers').textContent = 
+                    document.getElementById('comments-Manuevers').value || "No additional comments.";
+                
+                document.getElementById('preview-comments-observation').textContent = 
+                    document.getElementById('comments-Observation').value || "No additional comments.";
+                
+                document.getElementById('preview-general-comments').textContent = 
+                    document.getElementById('generalComments').value || "No general comments provided.";
+                
+                // Show preview and enable export button
+                document.getElementById('reportPreview').style.display = 'block';
+                document.getElementById('exportBtn').disabled = false;
+                
+                // Scroll to preview
+                document.getElementById('reportPreview').scrollIntoView({ behavior: 'smooth' });
+                
+                // Add to history
+                addToHistory(studentName, lessonDate);
+            });
+            
+            // Export to PDF button
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const studentName = document.getElementById('studentName').value;
+                const lessonDate = document.getElementById('lessonDate').value;
+                const dateFormatted = new Date(lessonDate).toLocaleDateString('en-GB').replace(/\//g, '-');
+                const filename = `${dateFormatted}_${studentName}_Driving_Report.pdf`;
+                
+                // Use html2canvas and jsPDF to generate PDF
+                const { jsPDF } = window.jspdf;
+                
+                html2canvas(document.getElementById('reportPreview')).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 210; // A4 width in mm
+                    const pageHeight = 295; // A4 height in mm
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    
+                    // Add more pages if needed
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    
+                    pdf.save(filename);
+                });
+            });
+            
+            // Save for later button
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                alert('Form progress saved successfully!');
+                // In a real application, this would save to local storage or a database
+            });
+            
+            // Clear form button
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear the form? All data will be lost.')) {
+                    document.querySelectorAll('input, textarea').forEach(element => {
+                        if (element.id !== 'lessonDate') {
+                            element.value = '';
+                        }
+                    });
+                    
+                    document.querySelectorAll('.rating-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                        for (let i = 1; i <= 10; i++) {
+                            btn.classList.remove(`selected-${i}`);
+                        }
+                    });
+                    
+                    document.querySelectorAll('.feedback').forEach(fb => {
+                        fb.style.display = 'none';
+                    });
+                    
+                    document.getElementById('reportPreview').style.display = 'none';
+                    document.getElementById('exportBtn').disabled = true;
+                }
+            });
+            
+            function generateSkillPreview(category, previewElementId) {
+                const previewElement = document.getElementById(previewElementId);
+                previewElement.innerHTML = '';
+                
+                document.querySelectorAll('.category').forEach(cat => {
+                    if (cat.querySelector('.category-title').textContent.includes(category)) {
+                        cat.querySelectorAll('.skill-item').forEach(skillItem => {
+                            const skillName = skillItem.querySelector('.skill-name').textContent;
+                            const selectedButton = skillItem.querySelector('.rating-btn.selected');
+                            
+                            if (selectedButton) {
+                                const rating = selectedButton.dataset.value;
+                                const skill = skillItem.dataset.skill;
+                                const feedback = feedbackMessages[skill][rating];
+                                const comments = document.getElementById(`comments-${skill}`).value;
+                                
+                                const skillElement = document.createElement('div');
+                                skillElement.className = 'preview-skill';
+                                skillElement.innerHTML = `
+                                    <div>${skillName}</div>
+                                    <div>Rating: ${rating}/10</div>
+                                `;
+                                previewElement.appendChild(skillElement);
+                                
+                                const feedbackElement = document.createElement('p');
+                                feedbackElement.style.fontSize = '14px';
+                                feedbackElement.style.marginTop = '5px';
+                                feedbackElement.style.color = '#555';
+                                feedbackElement.textContent = feedback;
+                                previewElement.appendChild(feedbackElement);
+                                
+                                if (comments) {
+                                    const commentsElement = document.createElement('p');
+                                    commentsElement.style.fontSize = '14px';
+                                    commentsElement.style.marginTop = '5px';
+                                    commentsElement.style.fontStyle = 'italic';
+                                    commentsElement.style.color = '#777';
+                                    commentsElement.textContent = `Instructor notes: ${comments}`;
+                                    previewElement.appendChild(commentsElement);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            function addToHistory(studentName, lessonDate) {
+                const historyContainer = document.getElementById('lessonHistory');
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                // Calculate average score
+                let totalScore = 0;
+                let ratedSkills = 0;
+                
+                document.querySelectorAll('.rating-btn.selected').forEach(button => {
+                    totalScore += parseInt(button.dataset.value);
+                    ratedSkills++;
+                });
+                
+                const averageScore = ratedSkills > 0 ? (totalScore / ratedSkills).toFixed(1) : 0;
+                let badgeClass = 'badge-success';
+                
+                if (averageScore < 5) {
+                    badgeClass = 'badge-danger';
+                } else if (averageScore < 7) {
+                    badgeClass = 'badge-warning';
+                }
+                
+                // Find general comments
+                const generalComments = document.getElementById('generalComments').value;
+                let shortComments = generalComments.substring(0, 80) + (generalComments.length > 80 ? '...' : '');
+                
+                if (!shortComments) {
+                    shortComments = "No additional comments provided.";
+                }
+                
+                historyItem.innerHTML = `
+                    <h4>${studentName} <span class="badge ${badgeClass}">${averageScore}</span></h4>
+                    <p><i class="far fa-calendar"></i> ${new Date(lessonDate).toLocaleDateString()}</p>
+                    <p>${shortComments}</p>
+                `;
+                
+                historyContainer.prepend(historyItem);
+            }
+        });
+    </script>
+</body>
+</html>
